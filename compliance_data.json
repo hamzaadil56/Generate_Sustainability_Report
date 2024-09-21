@@ -1,0 +1,14 @@
+[
+    {
+        "supplier_id": "S001",
+        "compliance_standards": ["REACH", "WEEE"],
+        "last_audit_date": "2023-06-15",
+        "audit_result": "Compliant"
+    },
+    {
+        "supplier_id": "S002",
+        "compliance_standards": ["REACH", "RoHS"],
+        "last_audit_date": "2023-07-10",
+        "audit_result": "Non-compliant"
+    }
+]

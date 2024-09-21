@@ -1,0 +1,25 @@
+[
+    {
+        "supplier_id": "S001",
+        "name": "EcoTextiles Ltd.",
+        "location": "India",
+        "sustainability_certifications": ["GOTS", "OEKO-TEX"],
+        "annual_report": "eco_textiles_annual_report_2023.pdf",
+        "contact_info": {
+            "email": "contact@ecotextiles.com",
+            "phone": "+91-1234567890"
+        }
+    },
+    {
+        "supplier_id": "S002",
+        "name": "GreenMaterials Co.",
+        "location": "Brazil",
+        "sustainability_certifications": ["FSC", "ISO 14001"],
+        "annual_report": "greenmaterials_annual_report_2023.pdf",
+        "contact_info": {
+            "email": "info@greenmaterials.com",
+            "phone": "+55-9876543210"
+        }
+    }
+]
+

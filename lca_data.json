@@ -1,0 +1,82 @@
+[
+    {
+        "product_id": "P001",
+        "stages": [
+            {
+                "stage": "Raw Material Extraction",
+                "impact": {
+                    "co2_emissions": "1 kg",
+                    "water_usage": "50 liters"
+                }
+            },
+            {
+                "stage": "Production",
+                "impact": {
+                    "co2_emissions": "1 kg",
+                    "water_usage": "30 liters"
+                }
+            },
+            {
+                "stage": "Transportation",
+                "impact": {
+                    "co2_emissions": "1 kg",
+                    "water_usage": "0 liters"
+                }
+            },
+            {
+                "stage": "Usage",
+                "impact": {
+                    "co2_emissions": "0 kg",
+                    "water_usage": "20 liters"
+                }
+            },
+            {
+                "stage": "Disposal",
+                "impact": {
+                    "co2_emissions": "0 kg",
+                    "water_usage": "0 liters"
+                }
+            }
+        ]
+    },
+    {
+        "product_id": "P002",
+        "stages": [
+            {
+                "stage": "Raw Material Extraction",
+                "impact": {
+                    "co2_emissions": "1.5 kg",
+                    "water_usage": "70 liters"
+                }
+            },
+            {
+                "stage": "Production",
+                "impact": {
+                    "co2_emissions": "2 kg",
+                    "water_usage": "50 liters"
+                }
+            },
+            {
+                "stage": "Transportation",
+                "impact": {
+                    "co2_emissions": "1.5 kg",
+                    "water_usage": "0 liters"
+                }
+            },
+            {
+                "stage": "Usage",
+                "impact": {
+                    "co2_emissions": "0 kg",
+                    "water_usage": "10 liters"
+                }
+            },
+            {
+                "stage": "Disposal",
+                "impact": {
+                    "co2_emissions": "0 kg",
+                    "water_usage": "0 liters"
+                }
+            }
+        ]
+    }
+]

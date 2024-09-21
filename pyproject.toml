@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "generate-sustainability-report"
+version = "0.1.0"
+description = ""
+authors = ["Muhammad Hamza <hamzaadil56@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.3.0"
+langchain-community = "^0.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

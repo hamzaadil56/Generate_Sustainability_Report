@@ -1,0 +1,16 @@
+[
+    {
+        "product_id": "P001",
+        "co2_emissions": "3 kg",
+        "water_usage": "100 liters",
+        "energy_usage": "10 kWh",
+        "recyclability": "100%"
+    },
+    {
+        "product_id": "P002",
+        "co2_emissions": "5 kg",
+        "water_usage": "150 liters",
+        "energy_usage": "15 kWh",
+        "recyclability": "80%"
+    }
+]
