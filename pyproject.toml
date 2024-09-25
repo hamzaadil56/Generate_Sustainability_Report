@@ -13,6 +13,7 @@ sqlmodel = "^0.0.22"
 fastapi = "^0.115.0"
 uvicorn = "^0.30.6"
 psycopg2 = "^2.9.9"
+faker = "^29.0.0"
 
 
 [build-system]
