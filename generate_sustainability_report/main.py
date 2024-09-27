@@ -1,14 +1,14 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from sqlmodel import Session, select
-from models import CompanyInfo, CarbonEmissions
+from models import CompanyInfo, CarbonEmissions, WaterUsage, WasteManagement, ESGReports, EmployeeSatisfaction, EnergyConsumption, DiversityInclusion, Products, SupplierCompliance
 from database import create_db_and_tables, get_db
 from schemas import UserCreate, UserRead, CompanyRead, CompanyCreate, CarbonEmissionsCreate, CompanyInfoCreate
 from faker import Faker
 from sqlalchemy.exc import SQLAlchemyError
 from typing import List
 import random
-
+from datetime import datetime
 fake = Faker()
 
 INDUSTRIES = [
@@ -70,13 +70,23 @@ def create_carbon_emissions(emissions: CarbonEmissionsCreate, db: Session = Depe
     return db_emissions
 
 
-@app.post("/ingest_data/")
-def ingest_data(db: Session = Depends(get_db)):
-    companies_created: List[int] = []
-    emissions_created: List[int] = []
-
+@app.post("/ingest_random_data/", response_model=dict)
+def ingest_random_data(db: Session = Depends(get_db), num_companies: int = 10, years: int = 5):
     try:
-        for _ in range(10):  # Create 10 sample companies
+        records_created = {
+            "CompanyInfo": 0,
+            "CarbonEmissions": 0,  # Added CarbonEmissions
+            "WaterUsage": 0,
+            "WasteManagement": 0,
+            "DiversityInclusion": 0,
+            "EmployeeSatisfaction": 0,
+            "Products": 0,
+            "ESGReports": 0,
+            "SupplierCompliance": 0
+        }
+
+        for _ in range(num_companies):
+            # Create a company
             company = CompanyInfo(
                 name=fake.company(),
                 industry=random.choice(INDUSTRIES),
@@ -84,50 +94,151 @@ def ingest_data(db: Session = Depends(get_db)):
                 year=fake.year()
             )
             db.add(company)
-            db.flush()  # Flush to get the ID without committing
-            companies_created.append(company.id)
-
-            # Create carbon emissions data for each company
-            emissions = CarbonEmissions(
-                company_id=company.id,
-                year=company.year,
-                total_emissions=fake.pyfloat(min_value=1000, max_value=100000),
-                scope_1=fake.pyfloat(min_value=100, max_value=10000),
-                scope_2=fake.pyfloat(min_value=500, max_value=50000),
-                scope_3=fake.pyfloat(min_value=200, max_value=20000)
-            )
-            db.add(emissions)
             db.flush()
-            emissions_created.append(emissions.id)
+            records_created["CompanyInfo"] += 1
 
-        # If everything is successful, commit the transaction
+            # Generate data for multiple years
+            for year in range(datetime.now().year - years + 1, datetime.now().year + 1):
+                # Carbon Emissions
+                carbon_emissions = CarbonEmissions(
+                    company_id=company.id,
+                    year=year,
+                    total_emissions=fake.pyfloat(
+                        min_value=1000, max_value=100000),
+                    scope_1=fake.pyfloat(min_value=100, max_value=10000),
+                    scope_2=fake.pyfloat(min_value=500, max_value=50000),
+                    scope_3=fake.pyfloat(min_value=200, max_value=20000)
+                )
+                db.add(carbon_emissions)
+                records_created["CarbonEmissions"] += 1
+
+                # Water Usage
+                water_usage = WaterUsage(
+                    company_id=company.id,
+                    year=year,
+                    total_usage=fake.pyfloat(
+                        min_value=1000, max_value=1000000),
+                    per_capita=fake.pyfloat(min_value=10, max_value=1000),
+                    renewable_percentage=fake.pyfloat(
+                        min_value=0, max_value=100)
+                )
+                db.add(water_usage)
+                records_created["WaterUsage"] += 1
+
+                # Waste Management
+                waste_management = WasteManagement(
+                    company_id=company.id,
+                    year=year,
+                    total_waste=fake.pyfloat(min_value=100, max_value=100000),
+                    recycled_percentage=fake.pyfloat(
+                        min_value=0, max_value=100),
+                    landfill=fake.pyfloat(min_value=10, max_value=50000),
+                    recycled=fake.pyfloat(min_value=10, max_value=50000),
+                    composted=fake.pyfloat(min_value=0, max_value=10000)
+                )
+                db.add(waste_management)
+                records_created["WasteManagement"] += 1
+
+                # Diversity and Inclusion
+                diversity_inclusion = DiversityInclusion(
+                    company_id=company.id,
+                    year=year,
+                    employees=fake.random_int(min=100, max=10000),
+                    diversity_percentage=fake.pyfloat(
+                        min_value=0, max_value=100),
+                    benefits=fake.text(max_nb_chars=200)
+                )
+                db.add(diversity_inclusion)
+                records_created["DiversityInclusion"] += 1
+
+                # Employee Satisfaction
+                employee_satisfaction = EmployeeSatisfaction(
+                    company_id=company.id,
+                    year=year,
+                    satisfaction_score=fake.pyfloat(min_value=1, max_value=5),
+                    benefits=fake.text(max_nb_chars=200)
+                )
+                db.add(employee_satisfaction)
+                records_created["EmployeeSatisfaction"] += 1
+
+                # Products
+                products = Products(
+                    company_id=company.id,
+                    year=year,
+                    products=', '.join(fake.words(nb=3)),
+                    benefits=fake.text(max_nb_chars=200)
+                )
+                db.add(products)
+                records_created["Products"] += 1
+
+                # ESG Reports
+                esg_report = ESGReports(
+                    company_id=company.id,
+                    year=year,
+                    carbon_emissions_reduction=fake.pyfloat(
+                        min_value=0, max_value=50),
+                    water_consumption_reduction=fake.pyfloat(
+                        min_value=0, max_value=50),
+                    generated_at=fake.date_time_this_year().isoformat()
+                )
+                db.add(esg_report)
+                records_created["ESGReports"] += 1
+
+                # Supplier Compliance
+                supplier_compliance = SupplierCompliance(
+                    company_id=company.id,
+                    year=year,
+                    compliance_score=fake.pyfloat(min_value=0, max_value=100),
+                    sustainable_material_percentage=fake.pyfloat(
+                        min_value=0, max_value=100)
+                )
+                db.add(supplier_compliance)
+                records_created["SupplierCompliance"] += 1
+
         db.commit()
         return {
-            "message": "Sample data ingested successfully",
-            "companies_created": len(companies_created),
-            "emissions_records_created": len(emissions_created)
+            "message": "Random data ingested successfully",
+            "records_created": records_created
         }
 
-    except SQLAlchemyError as e:
-        # If there's an error, roll back the transaction
-        db.rollback()
-        # Log the error (you should set up proper logging)
-        print(f"Database error occurred: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail="An error occurred while ingesting data")
-
     except Exception as e:
-        # Catch any other unexpected errors
         db.rollback()
-        print(f"Unexpected error occurred: {str(e)}")
+        print(f"Error occurred: {str(e)}")
         raise HTTPException(
-            status_code=500, detail="An unexpected error occurred")
+            status_code=500, detail=f"An error occurred while ingesting data: {str(e)}")
 
     finally:
-        # Close the database session
         db.close()
 
 
+@app.post("/energy_consumption/fake_data/", response_model=dict)
+def create_fake_energy_consumption(db: Session = Depends(get_db), num_entries: int = 10):
+    if num_entries < 1 or num_entries > 10:
+        raise HTTPException(
+            status_code=400, detail="Number of entries should be between 1 and 10.")
+
+    records_created = []
+
+    for _ in range(num_entries):
+        energy_data = EnergyConsumption(
+            # Assuming you have company_ids from 1 to 100
+            company_id=random.randint(1, 10),
+            year=random.randint(2015, 2024),
+            total_energy=fake.pyfloat(min_value=1000, max_value=100000),
+            electricity=fake.pyfloat(min_value=500, max_value=50000),
+            natural_gas=fake.pyfloat(min_value=200, max_value=30000),
+            other=fake.pyfloat(min_value=100, max_value=20000),
+            renewable_percentage=fake.pyfloat(min_value=0, max_value=100)
+        )
+
+        db.add(energy_data)
+        db.flush()  # Flush to get the data inserted without committing yet
+        db.refresh(energy_data)  # Refresh to get the primary key (id)
+        records_created.append(energy_data)
+
+    db.commit()  # Commit once after adding all entries
+
+    return {"message": "Fake EnergyConsumption data created", "records": records_created}
 # @app.post("/users/", response_model=UserRead)
 # def create_user(user: UserCreate, db: Session = Depends(get_db)):
 #     statement = select(User).where(User.email == user.email)
