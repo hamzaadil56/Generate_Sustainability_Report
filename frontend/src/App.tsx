@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import { SendHorizontal } from "lucide-react";
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -73,9 +74,9 @@ function App() {
             />
             <button
               onClick={handleSendMessage}
-              className="bg-green-500 text-white w-9 h-9  absolute bottom-0 mb-3 mr-2  rounded-full right-0"
+              className="bg-green-500 text-white w-9 h-9 text-center flex justify-center items-center absolute bottom-0 mb-3 mr-2  rounded-full right-0"
             >
-              U
+              <SendHorizontal />
             </button>
           </div>
         </div>
