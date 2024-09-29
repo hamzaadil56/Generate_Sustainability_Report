@@ -11,6 +11,12 @@ import random
 from datetime import datetime
 from report_generator import report_generator
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost:5173",
+
+]
 
 
 class Query(BaseModel):
@@ -35,6 +41,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 query_system = report_generator.SQLQuerySystem(
     db_uri="postgresql://postgres:Hamza@localhost:5432/postgres")
 

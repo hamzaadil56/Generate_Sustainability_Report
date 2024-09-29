@@ -10,7 +10,7 @@ from langchain_core.runnables import RunnablePassthrough
 
 
 class SQLQuerySystem:
-    def __init__(self, db_uri, model="llama-3.2-11b-text-preview", top_k=5):
+    def __init__(self, db_uri, model="llama-3.1-70b-versatile", top_k=5):
         load_dotenv()
         self.llm = ChatGroq(model=model)
         self.db = SQLDatabase.from_uri(db_uri)
@@ -53,8 +53,23 @@ class SQLQuerySystem:
     def create_answer_prompt(self):
         return PromptTemplate.from_template(
             """Given the following user question, corresponding SQL query, and SQL result, answer the user question.
-            Your answer should be precise. And if something goes wrong and you can't be to find the data from the query, so just say "Can't able to found the data!"
+            Your answer should be in the follwing json format. If something goes wrong with finding the data, just say "Can't able to find data'.
 
+            {{
+                "answer":string,
+                "data_type":string,
+                "chart_type":string,               
+                data:[{{
+                "company":string,
+                "value":float,
+                "year":int,
+                }}]
+            }}
+
+            In the above json format, the data type can be either "text" or "data". If the the data type will be "text", then the "data" property will be null. And if the data type will be "data", then the "data" property will be in array format. And then a chart type should also be suggested from the following three types: 
+              1) Bar
+              2) Line
+              3) Pie .       
         Question: {question}
         SQL Query: {query}
         SQL Result: {result}
