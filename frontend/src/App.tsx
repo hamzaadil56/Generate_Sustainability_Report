@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SendHorizontal } from "lucide-react";
 import axios from "axios";
+import Chart from "chart.js/auto";
+import { CategoryScale } from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
+import Loader from "./Loader";
+
+Chart.register(CategoryScale);
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -8,6 +14,34 @@ function App() {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "My First Dataset",
+        data: [65, 59, 80, 81, 56, 55, 40],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+          "rgba(255, 205, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(201, 203, 207, 0.2)",
+        ],
+        borderColor: [
+          "rgb(255, 99, 132)",
+          "rgb(255, 159, 64)",
+          "rgb(255, 205, 86)",
+          "rgb(75, 192, 192)",
+          "rgb(54, 162, 235)",
+          "rgb(153, 102, 255)",
+          "rgb(201, 203, 207)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  });
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -34,6 +68,9 @@ function App() {
         const botMessage = {
           type: "bot",
           content: JSON.parse(response.data.response)["answer"],
+          chartType: JSON.parse(response.data.response)?.["chart_type"],
+          data: JSON.parse(response.data.response)?.["data"],
+          dataType: JSON.parse(response.data.response)?.["data_type"],
         };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       } catch (error) {
@@ -58,29 +95,9 @@ function App() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar (Chat History) */}
-      <div
-        className={`fixed inset-y-0 left-0 w-64 bg-gray-800 text-white transition-transform transform ${
-          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0`}
-      >
-        <div className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Chat History</h2>
-          {/* <ul>
-            {messages.length > 0 ? (
-              messages.map((msg, index) => (
-                <li key={index} className="mb-2 p-2 bg-gray-700 rounded">
-                  {msg.content.substring(0, 30)}...
-                </li>
-              ))
-            ) : (
-              <li className="text-gray-400">No history yet...</li>
-            )}
-          </ul> */}
-        </div>
-      </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col max-w-2xl mx-auto">
         <button
           className="md:hidden bg-green-500 text-white py-2 px-4 rounded m-4"
           onClick={toggleDrawer}
@@ -112,6 +129,42 @@ function App() {
                   }`}
                 >
                   {msg.content}
+                  <div>
+                    {msg?.data && msg?.chartType === "Bar" && (
+                      <div>
+                        <Bar
+                          data={{
+                            labels: msg?.data.map((data) => data?.company),
+                            datasets: [
+                              {
+                                label: msg?.dataType,
+                                data: msg?.data.map((data) => data.value),
+                                borderColor: "black",
+                                borderWidth: 2,
+                              },
+                            ],
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {msg?.data && msg?.chartType === "Line" && (
+                    <div className="w-[70%]">
+                      <Line
+                        data={{
+                          labels: msg?.data.map((data) => data?.year),
+                          datasets: [
+                            {
+                              label: msg?.dataType,
+                              data: msg?.data.map((data) => data.value),
+                              borderColor: "black",
+                              borderWidth: 2,
+                            },
+                          ],
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -141,10 +194,10 @@ function App() {
             />
             <button
               onClick={handleSendMessage}
-              className="absolute right-2 bottom-2 bg-green-500 text-white w-9 h-9 rounded-full flex items-center justify-center"
+              className="absolute right-2 bottom-2 bg-green-500 text-white w-9 h-9 mb-[4px] rounded-full flex items-center justify-center"
               disabled={isLoading}
             >
-              <SendHorizontal size={20} />
+              {isLoading ? <Loader /> : <SendHorizontal size={20} />}
             </button>
           </div>
         </div>

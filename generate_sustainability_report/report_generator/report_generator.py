@@ -7,10 +7,11 @@ from langchain.prompts import PromptTemplate
 from operator import itemgetter
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import ChatOpenAI
 
 
 class SQLQuerySystem:
-    def __init__(self, db_uri, model="llama-3.1-70b-versatile", top_k=5):
+    def __init__(self, db_uri, model="llama-3.2-11b-text-preview", top_k=5):
         load_dotenv()
         self.llm = ChatGroq(model=model)
         self.db = SQLDatabase.from_uri(db_uri)
@@ -58,7 +59,8 @@ class SQLQuerySystem:
             {{
                 "answer":string,
                 "data_type":string,
-                "chart_type":string,               
+                "chart_type":string,
+                "chart_title":string,                  
                 data:[{{
                 "company":string,
                 "value":float,
@@ -66,10 +68,16 @@ class SQLQuerySystem:
                 }}]
             }}
 
-            In the above json format, the data type can be either "text" or "data". If the the data type will be "text", then the "data" property will be null. And if the data type will be "data", then the "data" property will be in array format. And then a chart type should also be suggested from the following three types: 
+            In the above json format, the data_type can be either "text" or "list". If the user wants to compare the data between different years or companies, then the data_type will be "list". And if the user wants to query simple data metrics, then the data_type will be  If the the data type will be "text", then the "data" property will be null. And if the data type will be "list", then the "data" property should not be null and it must be an array which will be the list of dictionary having these properties : company(string), value(float), year(int). The "data" property will be null if the answer is "Can't able to find data'.
+
+            The "answer" property should contain the answer to the user question. The "chart_type" property should contain the type of chart suggested from the following three types:
               1) Bar
               2) Line
-              3) Pie .       
+              3) Pie .
+
+            
+            
+                  
         Question: {question}
         SQL Query: {query}
         SQL Result: {result}
